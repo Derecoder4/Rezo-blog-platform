@@ -1,26 +1,39 @@
-// Import the express framework for building web servers
-const express = require('express');
-// Import the cors middleware to enable Cross-Origin Resource Sharing
-const cors = require('cors');
+const express = require('express'); // Import Express framework
+const cors = require('cors'); // Allow frontend to access backend API
 
-// Create an instance of an Express application
-const app = express();
-// Define the port number the server will listen on
-const PORT = 5001;
+const app = express(); // Initialize Express app
+const PORT = 5000; // Port to run the backend
 
-// Enable CORS for all routes (allows requests from other origins)
-app.use(cors());
-// Enable parsing of JSON request bodies
-app.use(express.json());
+app.use(cors()); // Enable CORS for all routes
+app.use(express.json()); // Allow backend to understand JSON requests
 
-// Define a GET endpoint at /api/message
-// When a GET request is made to /api/message, respond with a JSON object
-app.get('/api/message', (req, res) => {
-    res.json({ message: "Hello from the backend!" });
+// Fake database: an array to store posts temporarily
+let posts = [
+    { id: 1, title: "First Post", content: "This is the first blog post." },
+];
+
+// Route: GET /api/posts
+// Purpose: Send all blog posts to the frontend
+app.get('/api/posts', (req, res) => {
+    res.json(posts); // Respond with the posts array
 });
 
-// Start the server and listen on the specified port
-// When the server starts, log a message to the console
+// Route: POST /api/posts
+// Purpose: Receive new blog post from frontend and add it to our "database"
+app.post('/api/posts', (req, res) => {
+    const { title, content } = req.body; // Extract data from request body
+
+    const newPost = {
+        id: posts.length + 1, // Simple ID logic for demo
+        title,
+        content
+    };
+
+    posts.push(newPost); // Save new post to array (our fake database)
+    res.status(201).json(newPost); // Respond to frontend with the saved post
+});
+
+// Start server
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
